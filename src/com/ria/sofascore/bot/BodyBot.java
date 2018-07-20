@@ -7,7 +7,8 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import bot.configuration.SettingModel;
-
+//568149441:AAFAq-1gxVcIB163bVVzfRVM_eMMJ1NdQho
+//Multibot
 public class BodyBot extends TelegramLongPollingBot {
 
     private Config config = new Config();

@@ -3,13 +3,35 @@ package com.ria.sofascore.bot.configuration;
 
 import bot.configuration.SettingModel;
 import com.google.gson.*;
+import javafx.scene.control.Alert;
+
 import java.io.*;
 import java.util.Scanner;
 
 public class Config {
 
-    public static String getPath(){
-        return "C:/setting.json";
+    public String getPathSettingFile(){
+        String path = Config.class.getResource("").getPath();
+        String[] temp = path.split("/");
+
+        final String nameApp = "Sofa.jar!";
+
+        StringBuilder buildPath = new StringBuilder();
+        for (int i = 1; i < temp.length; i++) {
+
+            if(!temp[i].equals(nameApp)){
+                buildPath.append(temp[i]+"/");
+            }
+            else {
+                buildPath.append("Setting");
+                break;
+            }
+        }
+        return buildPath.toString();
+    }
+
+    public static String getPath() throws IOException {
+        return "C:\\Users\\Prog1\\Desktop\\setting.json";
     }
 
     public void saveSetting(String name, String token){
@@ -25,7 +47,7 @@ public class Config {
             e.printStackTrace();
         }
     }
-    public SettingModel readSetting(){;
+    public SettingModel readSetting(){
 
         JsonParser jsonParser = new JsonParser();
         StringBuilder builder = new StringBuilder();
@@ -33,6 +55,8 @@ public class Config {
         try {
             fileReader = new Scanner(new FileReader(new File(getPath())));
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         while (fileReader.hasNextLine()){

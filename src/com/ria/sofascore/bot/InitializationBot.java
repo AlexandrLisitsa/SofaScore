@@ -6,25 +6,24 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class InitializationBot {
 
-    private InitializationBot instance;
+    private static InitializationBot instance;
 
     private InitializationBot() {
     }
 
-    public InitializationBot getInstance(){
+    public static InitializationBot getInstance(){
         if(instance == null){
             instance = new InitializationBot();
+
+            ApiContextInitializer.init();
+            TelegramBotsApi botapi = new TelegramBotsApi();
+            try {
+                botapi.registerBot(new BodyBot());
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+
         }
         return instance;
-    }
-
-    public void Initialization(){
-        ApiContextInitializer.init();
-        TelegramBotsApi botapi = new TelegramBotsApi();
-        try {
-            botapi.registerBot(new BodyBot());
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
     }
 }
