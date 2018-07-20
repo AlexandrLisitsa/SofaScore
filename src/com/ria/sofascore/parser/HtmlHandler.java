@@ -19,16 +19,20 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
-public class HTML_Handler extends Application {
+public class HtmlHandler extends Application {
 
 
     private WebView webview = new WebView();
     private final WebEngine webengine = webview.getEngine();
+    private HtmlParser htmlParser = new HtmlParser();
+    private boolean isMainLoaded;
+    private ArrayList<String> links = new ArrayList<>();
 
     public void start(Stage primaryStage) {
 
-        primaryStage.setOpacity(0);
+        primaryStage.setOpacity(1);
         webengine.getLoadWorker().stateProperty().addListener(
 
                 new ChangeListener<Worker.State>() {
@@ -42,14 +46,20 @@ public class HTML_Handler extends Application {
                                 transformer.setOutputProperty(OutputKeys.METHOD, "xml");
                                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                                transformer.setOutputProperty("{https://www.sofascore.com/ru/tennis/livescore}", "4");
+                                //transformer.setOutputProperty("{https://www.sofascore.com/ru/tennis/livescore}", "4");
 
                                 StringWriter writer = new StringWriter();
                                 StreamResult result = new StreamResult(writer);
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
-                                System.out.println(strResult);
-
+                                isMainLoaded=true;
+                                if(isMainLoaded){
+                                    links=htmlParser.getAllLinks(strResult);
+                                    System.out.println(links.size());
+                                    links.forEach(l->{
+                                        System.out.println(l);
+                                    });
+                                }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
