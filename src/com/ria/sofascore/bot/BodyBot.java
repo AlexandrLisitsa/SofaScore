@@ -15,7 +15,8 @@ public class BodyBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return settingModel.getBotName();
+        return settingModel.getBotName().replaceAll("\"","");
+
     }
 
     @Override
@@ -29,7 +30,7 @@ public class BodyBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return settingModel.getBotTokent();
+        return settingModel.getBotTokent().replaceAll("\"","");
     }
 
     @SuppressWarnings("deprecation")
