@@ -27,8 +27,9 @@ public class HtmlHandler extends Application {
     private WebView webview = new WebView();
     private final WebEngine webengine = webview.getEngine();
     private HtmlParser htmlParser = new HtmlParser();
-    private boolean isMainLoaded;
-    private ArrayList<String> links = new ArrayList<>();
+    private boolean isMainLoaded=true;
+    private ArrayList<String> links;
+    private int pageIndex;
 
     public void start(Stage primaryStage) {
 
@@ -52,14 +53,19 @@ public class HtmlHandler extends Application {
                                 StreamResult result = new StreamResult(writer);
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
-                                isMainLoaded=true;
                                 if(isMainLoaded){
                                     links=htmlParser.getAllLinks(strResult);
-                                    System.out.println(links.size());
-                                    links.forEach(l->{
-                                        System.out.println(l);
-                                    });
                                 }
+                                isMainLoaded=false;
+                                if(pageIndex==links.size()){
+                                    isMainLoaded=true;
+                                    pageIndex=0;
+                                    webengine.load("https://www.sofascore.com/ru/tennis/livescore");
+                                }else{
+                                    getMatchFromLink(links.get(pageIndex));
+                                    pageIndex++;
+                                }
+
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -71,12 +77,16 @@ public class HtmlHandler extends Application {
         primaryStage.setScene(view);
         primaryStage.setTitle("sofascore_parser");
         primaryStage.show();
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(5000), e->{
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(50000), e->{
             webengine.reload();
         });
         Timeline timeline = new Timeline(keyFrame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+
+    private void getMatchFromLink(String s) {
+        webengine.load("https://www.sofascore.com"+s);
     }
 
 

@@ -22,8 +22,10 @@ public class HtmlParser {
                             tc.text().equals("WTA")||
                             tc.text().equals("APT")){
                         Elements aClass = t.getElementsByAttributeValueContaining("class", "cell cell--event-list  pointer list-event js-event js-link");
-                        String href = aClass.attr("href");
-                        links.add(href);
+                        aClass.forEach(ac->{
+                            String href = ac.attr("href");
+                            if(!links.contains(href))links.add(href);
+                        });
                     }
                 });
             });
