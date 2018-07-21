@@ -1,5 +1,6 @@
 package com.ria.sofascore.parser;
 
+import com.ria.sofascore.models.Game;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -19,16 +20,21 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
-public class HTML_Handler extends Application {
+public class HtmlHandler extends Application {
 
 
     private WebView webview = new WebView();
     private final WebEngine webengine = webview.getEngine();
+    private HtmlParser htmlParser = new HtmlParser();
+    private boolean isMainLoaded=true;
+    private ArrayList<Game> games;
+    private int gameIndex;
 
     public void start(Stage primaryStage) {
 
-        primaryStage.setOpacity(0);
+        primaryStage.setOpacity(1);
         webengine.getLoadWorker().stateProperty().addListener(
 
                 new ChangeListener<Worker.State>() {
@@ -42,13 +48,24 @@ public class HTML_Handler extends Application {
                                 transformer.setOutputProperty(OutputKeys.METHOD, "xml");
                                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                                transformer.setOutputProperty("{https://www.sofascore.com/ru/tennis/livescore}", "4");
+                                //transformer.setOutputProperty("{https://www.sofascore.com/ru/tennis/livescore}", "4");
 
                                 StringWriter writer = new StringWriter();
                                 StreamResult result = new StreamResult(writer);
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
-                                System.out.println(strResult);
+                                if(isMainLoaded){
+                                    games =htmlParser.getAllLinks(strResult);
+                                }
+                                isMainLoaded=false;
+                                if(gameIndex == games.size()){
+                                    isMainLoaded=true;
+                                    gameIndex =0;
+                                    webengine.load("https://www.sofascore.com/ru/tennis/livescore");
+                                }else{
+                                    getMatchFromLink(games.get(gameIndex).getGameURL());
+                                    gameIndex++;
+                                }
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -61,12 +78,16 @@ public class HTML_Handler extends Application {
         primaryStage.setScene(view);
         primaryStage.setTitle("sofascore_parser");
         primaryStage.show();
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(5000), e->{
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(50000), e->{
             webengine.reload();
         });
         Timeline timeline = new Timeline(keyFrame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+
+    private void getMatchFromLink(String s) {
+        webengine.load("https://www.sofascore.com"+s);
     }
 
 
