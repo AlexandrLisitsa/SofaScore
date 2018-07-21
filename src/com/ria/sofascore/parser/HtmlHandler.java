@@ -1,5 +1,6 @@
 package com.ria.sofascore.parser;
 
+import com.ria.sofascore.models.Game;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -28,8 +29,8 @@ public class HtmlHandler extends Application {
     private final WebEngine webengine = webview.getEngine();
     private HtmlParser htmlParser = new HtmlParser();
     private boolean isMainLoaded=true;
-    private ArrayList<String> links;
-    private int pageIndex;
+    private ArrayList<Game> games;
+    private int gameIndex;
 
     public void start(Stage primaryStage) {
 
@@ -54,16 +55,16 @@ public class HtmlHandler extends Application {
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
                                 if(isMainLoaded){
-                                    links=htmlParser.getAllLinks(strResult);
+                                    games =htmlParser.getAllLinks(strResult);
                                 }
                                 isMainLoaded=false;
-                                if(pageIndex==links.size()){
+                                if(gameIndex == games.size()){
                                     isMainLoaded=true;
-                                    pageIndex=0;
+                                    gameIndex =0;
                                     webengine.load("https://www.sofascore.com/ru/tennis/livescore");
                                 }else{
-                                    getMatchFromLink(links.get(pageIndex));
-                                    pageIndex++;
+                                    getMatchFromLink(games.get(gameIndex).getGameURL());
+                                    gameIndex++;
                                 }
 
                             } catch (Exception ex) {
