@@ -8,7 +8,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-public class HtmlParser {
+public class MainPageParser {
 
     public ArrayList<Game> getAllLinks(String document){
         var games = new ArrayList<Game>();

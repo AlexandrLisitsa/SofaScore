@@ -27,8 +27,10 @@ public class HtmlHandler extends Application {
 
     private WebView webview = new WebView();
     private final WebEngine webengine = webview.getEngine();
-    private HtmlParser htmlParser = new HtmlParser();
+    private MainPageParser mainPageParser = new MainPageParser();
+    private SingleGameParser singleGameParser = new SingleGameParser();
     private boolean isMainLoaded=true;
+    private boolean isParsingMatches=true;
     private ArrayList<Game> games;
     private int gameIndex;
 
@@ -55,16 +57,24 @@ public class HtmlHandler extends Application {
                                 transformer.transform(new DOMSource(doc),result);
                                 String strResult = writer.toString();
                                 if(isMainLoaded){
-                                    games =htmlParser.getAllLinks(strResult);
+                                    games = mainPageParser.getAllLinks(strResult);
                                 }
                                 isMainLoaded=false;
                                 if(gameIndex == games.size()){
                                     isMainLoaded=true;
+                                    isParsingMatches=true;
                                     gameIndex =0;
                                     webengine.load("https://www.sofascore.com/ru/tennis/livescore");
                                 }else{
-                                    getMatchFromLink(games.get(gameIndex).getGameURL());
-                                    gameIndex++;
+                                    if (isParsingMatches) {
+                                        getMatchFromLink(games.get(gameIndex).getGameURL());
+                                        isParsingMatches=false;
+                                    }else {
+                                        getMatchFromLink(games.get(gameIndex).getGameURL());
+                                        gameIndex++;
+                                        singleGameParser.parse(strResult,games.get(gameIndex));
+                                        System.exit(0);
+                                    }
                                 }
 
                             } catch (Exception ex) {
@@ -87,7 +97,7 @@ public class HtmlHandler extends Application {
     }
 
     private void getMatchFromLink(String s) {
-        webengine.load("https://www.sofascore.com"+s);
+        webengine.load(s);
     }
 
 
