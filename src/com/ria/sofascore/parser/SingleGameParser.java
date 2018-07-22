@@ -30,10 +30,8 @@ public class SingleGameParser {
                     set2.setSetTitle(e.text());
 
                 }
-                if(set1!=null&&!sets1.contains(set1)) {
-                    sets1.add(set1);
-                }
-
+                if(set1!=null&&!sets1.contains(set1))sets1.add(set1);
+                if(set2!=null&&!sets2.contains(set2))sets2.add(set2);
                 if (e.className().equals("pbp")) {
                     SubSet subSet1 = new SubSet();
                     SubSet subSet2 = new SubSet();
@@ -49,17 +47,13 @@ public class SingleGameParser {
                         }
                     }
                     sets1.get(sets1.size()-1).getSubSets().add(subSet1);
+                    sets2.get(sets2.size()-1).getSubSets().add(subSet2);
                 }
             }
         }
-        sets1.forEach(s->{
-            System.out.println(s.getSetTitle());
-            s.getSubSets().forEach(ss->{
-                ss.getScores().forEach(sc->{
-                    System.out.print(sc+" ");
-                });
-                System.out.println();
-            });
-        });
+        game.getPlayers().get(0).setSets(sets1);
+        game.getPlayers().get(2).setSets(sets2);
+
+
     }
 }
